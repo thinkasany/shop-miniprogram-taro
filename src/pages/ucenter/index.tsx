@@ -7,6 +7,7 @@ import iconAddressR from "@/images/icon/icon-address-r.png";
 import iconFootPrintR from "@/images/icon/icon-footprint-r.png";
 import iconserviceR from "@/images/icon/icon-service-r.png";
 import iconAboutR from "@/images/icon/icon-about-r.png";
+import Taro from "@tarojs/taro";
 
 import "./index.less";
 
@@ -21,12 +22,17 @@ const Index = () => {
   const toFootprint = () => console.log("11");
   const toAbout = () => console.log("11");
   const getOrderInfo = () => console.log("11");
+  const goAuth = () => {
+    Taro.navigateTo({
+      url: "/pages/app-auth/index",
+    });
+  };
 
   return (
     <div className="container">
       <div className="userinfo">
         {hasUserInfo ? (
-          <div className="head-wrap" onClick={goProfile}>
+          <div className="head-wrap" onClick={goAuth}>
             <div className="no-login-avatar">
               <div className="no-avatar">
                 <img className="avatar" src={defaultAvatarPng}></img>
@@ -139,8 +145,6 @@ const Index = () => {
           <div className="text">-{info.desc}-</div>
         </div>
       </div>
-
-
     </div>
   );
 };

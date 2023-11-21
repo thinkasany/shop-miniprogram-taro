@@ -4,6 +4,7 @@ export default defineAppConfig({
     "pages/category/index",
     "pages/cart/index",
     "pages/ucenter/index",
+    "pages/app-auth/index",
   ],
   subpackages: [], // 分包
   window: {

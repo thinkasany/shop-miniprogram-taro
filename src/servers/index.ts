@@ -1,6 +1,15 @@
 import request from "@/request";
 
-//首页数据接口
-export const IndexUrl = async () => await request("index/appInfo");
+// 登录
+export const AuthLoginByWeixin = async (data) =>
+  await request({
+    url: "auth/loginByWeixin",
+    method: "post",
+    data: { info: data },
+  }); //微信登录
 
-export const ShowSettings = async () => await request("settings/showSettings")
+//首页数据接口
+export const IndexUrl = async () => await request({ url: "index/appInfo" });
+
+export const ShowSettings = async () =>
+  await request({ url: "settings/showSettings" });
