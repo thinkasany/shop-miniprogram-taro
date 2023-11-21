@@ -38,6 +38,9 @@ const createAxios = (url: string, method?: string, data?: any) => {
 
 const request = async (url: string, method?: string, data?: any) => {
   const res = await createAxios(url, method, data)();
+  if (res.data.errno === 0) {
+    return res.data.data;
+  }
   return res.data;
 };
 
