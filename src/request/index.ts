@@ -14,9 +14,26 @@ const defaultOptions = {
 };
 
 const baseURL = "http://127.0.0.1:8360/api/";
-
+export const mergeHeaders = (options) => {
+  const token = Taro.getStorageSync('x-xzzshop-token') || '';
+  const defaultHeaders = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    options.header = {
+      ...defaultHeaders,
+      ...(options.header || {}),
+      ['x-xzzshop-token']: token,
+    };
+  } else {
+    options.header = {
+      ...defaultHeaders,
+      ...(options.header || {}),
+    };
+  }
+};
 const request = (options): Promise<any> => {
-
+  mergeHeaders(options);
   // 设置header统一的属性
   options = {
     ...defaultOptions,

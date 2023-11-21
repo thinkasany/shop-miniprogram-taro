@@ -11,5 +11,11 @@ export const AuthLoginByWeixin = async (data) =>
 //首页数据接口
 export const IndexUrl = async () => await request({ url: "index/appInfo" });
 
-export const ShowSettings = async () =>
-  await request({ url: "settings/showSettings" });
+export const ShowSettings = async () => await request({ url: "settings/showSettings" });
+
+// 收货地址
+export const AddressDetail = async () => await request({ url: "address/addressDetail" });//收货地址详情
+export const DeleteAddress = async () => await request({ url: "address/deleteAddress" });//删除收货地址
+export const SaveAddress = async () => await request({ url: "address/saveAddress" });//保存收货地址
+export const GetAddresses = async () => await request({ url: "address/getAddresses" });
+

@@ -8,6 +8,7 @@ import iconFootPrintR from "@/images/icon/icon-footprint-r.png";
 import iconserviceR from "@/images/icon/icon-service-r.png";
 import iconAboutR from "@/images/icon/icon-about-r.png";
 import Taro from "@tarojs/taro";
+import { loginNow } from "../utils";
 
 import "./index.less";
 
@@ -18,8 +19,17 @@ const Index = () => {
 
   const goProfile = () => console.log("11");
   const toOrderListTap = () => console.log("11");
-  const toAddressList = () => console.log("11");
-  const toFootprint = () => console.log("11");
+  const toAddressList = () => {
+    const res = loginNow()
+    if (res === true) {
+      Taro.navigateTo({
+          url: '/pages/center/address?type=0',
+      });
+  }
+  }
+  const toFootprint = () => {
+
+  }
   const toAbout = () => {
     Taro.navigateTo({
       url: "/pages/center/about",

@@ -46,9 +46,9 @@ const Index = () => {
   };
   const postLogin = async (info) => {
     const res = await AuthLoginByWeixin(info);
-    console.log('res', res);
+    console.log("res", res);
     Taro.setStorageSync("userInfo", res.userInfo);
-    Taro.setStorageSync("token", res.token);
+    Taro.setStorageSync("x-xzzshop-token", res.token);
     const is_new = res.is_new; //服务器返回的数据；
     if (is_new == 0) {
       Taro.showToast({ title: "您已经是老用户啦！", icon: "none" });
