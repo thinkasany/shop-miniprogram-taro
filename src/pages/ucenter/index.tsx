@@ -20,7 +20,11 @@ const Index = () => {
   const toOrderListTap = () => console.log("11");
   const toAddressList = () => console.log("11");
   const toFootprint = () => console.log("11");
-  const toAbout = () => console.log("11");
+  const toAbout = () => {
+    Taro.navigateTo({
+      url: "/pages/center/about",
+    });
+  };
   const getOrderInfo = () => console.log("11");
   const goAuth = () => {
     Taro.navigateTo({

@@ -3,10 +3,10 @@ export default defineAppConfig({
     "pages/index/index",
     "pages/category/index",
     "pages/cart/index",
-    "pages/ucenter/index",
     "pages/app-auth/index",
+    "pages/ucenter/index",
   ],
-  subpackages: [], // 分包
+  subpackages: [{ root: "pages/center", pages: ["about"] }], // 分包
   window: {
     backgroundTextStyle: "light",
     navigationBarBackgroundColor: "#fff",

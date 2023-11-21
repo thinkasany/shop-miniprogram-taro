@@ -24,7 +24,7 @@ const Index = () => {
       lang: "zh_CN",
       desc: "用户登录",
       success: async (res) => {
-        console.log("getUserProfile", res);
+        // console.log("getUserProfile", res);
         const loginParams = {
           code,
           encryptedData: res.encryptedData,
@@ -46,7 +46,16 @@ const Index = () => {
   };
   const postLogin = async (info) => {
     const res = await AuthLoginByWeixin(info);
-    console.log("post", res);
+    console.log('res', res);
+    Taro.setStorageSync("userInfo", res.userInfo);
+    Taro.setStorageSync("token", res.token);
+    const is_new = res.is_new; //服务器返回的数据；
+    if (is_new == 0) {
+      Taro.showToast({ title: "您已经是老用户啦！", icon: "none" });
+      Taro.navigateBack();
+    } else if (is_new == 1) {
+      Taro.navigateBack();
+    }
   };
   return (
     <div className="container">

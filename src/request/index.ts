@@ -22,7 +22,7 @@ const request = (options): Promise<any> => {
     ...defaultOptions,
     ...options,
   };
-  console.log("options", options);
+  // console.log("options", options);
   if (options.loading) Taro.showLoading();
   return new Promise((resolve: any, reject: any) => {
     Taro.request({
