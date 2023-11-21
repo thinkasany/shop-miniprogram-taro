@@ -29,7 +29,7 @@ const Address = () => {
   const goAddressDetail = (e) => {
     const id = e.currentTarget.dataset.addressid;
     Taro.navigateTo({
-      url: "/pages/ucenter/address-detail/index?id=" + id,
+      url: "/pages/center/addressDetail?id=" + id,
     });
   };
 

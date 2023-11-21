@@ -6,7 +6,9 @@ export default defineAppConfig({
     "pages/app-auth/index",
     "pages/ucenter/index",
   ],
-  subpackages: [{ root: "pages/center", pages: ["about", "address"] }], // 分包
+  subpackages: [
+    { root: "pages/center", pages: ["about", "address", "addressDetail"] },
+  ], // 分包
   window: {
     backgroundTextStyle: "light",
     navigationBarBackgroundColor: "#fff",
