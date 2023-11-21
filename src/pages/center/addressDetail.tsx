@@ -115,16 +115,88 @@ const AddressDetail = () => {
       Taro.navigateBack();
     });
   };
-  const chooseRegion = () => {};
-  const doneSelectRegion = () => {};
-  const bindinputName = () => {};
+  const chooseRegion = () => {
+    setOpenSelectRegion(true);
+    if (
+      address.province_id > 0 &&
+      address.city_id > 0 &&
+      address.district_id > 0
+    ) {
+      selectRegionList[0].id = address.province_id;
+      selectRegionList[0].name = address.province_name;
+      selectRegionList[0].parent_id = 1;
+
+      selectRegionList[1].id = address.city_id;
+      selectRegionList[1].name = address.city_name;
+      selectRegionList[1].parent_id = address.province_id;
+
+      selectRegionList[2].id = address.district_id;
+      selectRegionList[2].name = address.district_name;
+      selectRegionList[2].parent_id = address.city_id;
+      setSelectRegionList(selectRegionList);
+      setRegionType(3);
+      getRegionList(address.city_id);
+    } else {
+      setSelectRegionList([
+        {
+          id: 0,
+          name: "省份",
+          parent_id: 1,
+          type: 1,
+        },
+        {
+          id: 0,
+          name: "城市",
+          parent_id: 1,
+          type: 2,
+        },
+        {
+          id: 0,
+          name: "区县",
+          parent_id: 1,
+          type: 3,
+        },
+      ]);
+      setRegionType(1);
+      getRegionList(1);
+    }
+    setRegionDoneStatus();
+  };
+  const setRegionDoneStatus = () => {
+    const doneStatus = selectRegionList.every((item) => item.id !== 0);
+    setSelectRegionDone(doneStatus);
+  };
+  const doneSelectRegion = () => {
+    if (!selectRegionDone) {
+      return false;
+    }
+    address.province_id = selectRegionList[0].id;
+    address.city_id = selectRegionList[1].id;
+    address.district_id = selectRegionList[2].id;
+    address.province_name = selectRegionList[0].name;
+    address.city_name = selectRegionList[1].name;
+    address.district_name = selectRegionList[2].name;
+    address.full_region = selectRegionList
+      .map((item) => {
+        return item.name;
+      })
+      .join("");
+    setAddress(address);
+    setOpenSelectRegion(false);
+  };
+  const bindinputName = (e) => {
+    const name = e.detail.value;
+    setAddress({ ...address, name });
+  };
   const mobilechange = (e) => {
     const mobile = e.detail.value;
-    if (testMobile(mobile)) {
-      setAddress({ ...address, mobile });
-    }
+    testMobile(mobile);
+    setAddress({ ...address, mobile });
   };
-  const bindinputAddress = () => {};
+  const bindinputAddress = (e) => {
+    const $address = e.detail.value;
+    setAddress({ ...address, address: $address });
+  };
   const cancelSelectRegion = () => {};
   const switchChange = (e) => {
     const status = e.detail.value;
@@ -135,8 +207,66 @@ const AddressDetail = () => {
     setAddress({ ...address, is_default });
   };
   const deleteAddress = () => {};
-  const selectRegionType = () => {};
-  const selectRegion = () => {};
+  const selectRegionType = (event) => {
+    const regionTypeIndex = event.target.dataset.regionTypeIndex;
+
+    //判断是否可点击
+    if (
+      regionTypeIndex + 1 == regionType ||
+      (regionTypeIndex - 1 >= 0 &&
+        selectRegionList[regionTypeIndex - 1].id <= 0)
+    ) {
+      return false;
+    }
+    setRegionType(regionTypeIndex + 1);
+    const selectRegionItem = selectRegionList[regionTypeIndex];
+    getRegionList(selectRegionItem.parent_id);
+    setRegionDoneStatus();
+  };
+  const selectRegion = (index) => {
+    let regionIndex = index;
+    let regionItem = regionList[regionIndex];
+    let regionType = regionItem.type;
+    selectRegionList[regionType - 1] = regionItem;
+
+    if (regionType != 3) {
+      setSelectRegionList(selectRegionList);
+      setRegionType(regionType + 1);
+      getRegionList(regionItem.id);
+    } else {
+      setSelectRegionList(selectRegionList);
+    }
+
+    //重置下级区域为空
+    selectRegionList.map((item, index) => {
+      if (index > regionType - 1) {
+        item.id = 0;
+        item.name = index == 1 ? "城市" : "区县";
+        item.parent_id = 0;
+      }
+      return item;
+    });
+
+    setSelectRegionList(selectRegionList);
+
+    setRegionList(
+      regionList.map((item) => {
+        //标记已选择的
+        if (
+          regionType == item.type &&
+          selectRegionList[regionType - 1].id == item.id
+        ) {
+          item.selected = true;
+        } else {
+          item.selected = false;
+        }
+
+        return item;
+      })
+    );
+
+    setRegionDoneStatus();
+  };
   return (
     <>
       <div className="container">
