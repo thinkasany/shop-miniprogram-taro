@@ -20,16 +20,21 @@ const Index = () => {
   const goProfile = () => console.log("11");
   const toOrderListTap = () => console.log("11");
   const toAddressList = () => {
-    const res = loginNow()
+    const res = loginNow();
     if (res === true) {
       Taro.navigateTo({
-          url: '/pages/center/address?type=0',
+        url: "/pages/center/address?type=0",
       });
-  }
-  }
+    }
+  };
   const toFootprint = () => {
-
-  }
+    const res = loginNow();
+    if (res === true) {
+      Taro.navigateTo({
+        url: "/pages/center/footprint",
+      });
+    }
+  };
   const toAbout = () => {
     Taro.navigateTo({
       url: "/pages/center/about",

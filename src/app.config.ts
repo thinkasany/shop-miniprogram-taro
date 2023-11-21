@@ -7,7 +7,10 @@ export default defineAppConfig({
     "pages/ucenter/index",
   ],
   subpackages: [
-    { root: "pages/center", pages: ["about", "address", "addressDetail"] },
+    {
+      root: "pages/center",
+      pages: ["about", "address", "addressDetail", "footprint"],
+    },
   ], // 分包
   window: {
     backgroundTextStyle: "light",

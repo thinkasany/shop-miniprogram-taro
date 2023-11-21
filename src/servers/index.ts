@@ -20,3 +20,8 @@ export const SaveAddress = async (data) => await request({ url: "address/saveAdd
 export const GetAddresses = async () => await request({ url: "address/getAddresses" });
 export const RegionList = async (data) => await request({ url: "region/list", data });//获取区域列表
 
+// 足迹
+export const FootprintList = async (data) => await request({ url: "footprint/list", data }); //足迹列表
+export const FootprintDelete = async (data) => await request({ url: "footprint/delete", data }); //删除足迹
+
+
