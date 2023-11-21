@@ -3,7 +3,7 @@ import { IndexUrl, ShowSettings } from "@/servers/index";
 import loadingGIF from "@/images/icon/loading.gif";
 import contactPng from "@/images/icon/contact.png";
 import searchPng from "@/images/icon/search.png";
-import { Swiper, SwiperItem, Image, Navigator, View } from "@tarojs/components";
+import { Swiper, SwiperItem, Image, Navigator } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import "./index.less";
 
@@ -102,16 +102,16 @@ const Index = () => {
   return loading === 1 ? (
     <div className="container">
       {showContact === 1 ? (
-        <view className="contact-wrap">
+        <div className="contact-wrap">
           <button
             className="contact-btn"
             // session-from='{"nickName":"{{userInfo.nickname}}","avatarUrl":"{{userInfo.avatar}}"}'
             open-type="contact"
           >
             <img className="icon" src={contactPng}></img>
-            <view className="text">客服</view>
+            <div className="text">客服</div>
           </button>
-        </view>
+        </div>
       ) : null}
       <div className="search">
         <img className="icon" src={searchPng}></img>
@@ -266,7 +266,7 @@ const Index = () => {
                     <div className="box">
                       <img src={iitem.list_pic_url} className="image">
                         {iitem.is_new === 1 && (
-                          <View className="new-tag">新品</View>
+                          <div className="new-tag">新品</div>
                         )}
                       </img>
                       {iitem.goods_number <= 0 && (
