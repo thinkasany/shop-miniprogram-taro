@@ -5,31 +5,135 @@ import mobile from "@/images/icon/mobile.png";
 import position from "@/images/icon/position.png";
 import addressPng from "@/images/icon/address.png";
 import { Input, ScrollView, Switch } from "@tarojs/components";
+import { getAddressDetail, RegionList, SaveAddress } from "@/servers";
+import { showErrorToast, testMobile } from "@/utils";
 import "./addressDetail.less";
 
+const defaultSelectRegionList = [
+  {
+    id: 0,
+    name: "省份",
+    parent_id: 1,
+    type: 1,
+  },
+  {
+    id: 0,
+    name: "城市",
+    parent_id: 1,
+    type: 2,
+  },
+  {
+    id: 0,
+    name: "区县",
+    parent_id: 1,
+    type: 3,
+  },
+];
+const defaultAddress = {
+  id: 0,
+  province_id: 0,
+  city_id: 0,
+  district_id: 0,
+  address: "",
+  full_region: "",
+  name: "",
+  mobile: "",
+  is_default: 0,
+};
 const AddressDetail = () => {
-  const [type, setType] = useState(0);
-  const [address, setAddress] = useState<any>(null);
-  const addressId = 1;
-  const openSelectRegion = true;
-  const selectRegionDone = true;
-  const selectRegionList: any = [];
-  const regionList: any = [];
-  const regionType = 1;
+  const [address, setAddress] = useState<any>(defaultAddress);
+  const [openSelectRegion, setOpenSelectRegion] = useState(false);
+  const [addressId, setAddressId] = useState(1);
+  const [regionList, setRegionList] = useState<any[]>([]);
+  const [regionType, setRegionType] = useState(1);
+  const [selectRegionDone, setSelectRegionDone] = useState(false);
+  const [selectRegionList, setSelectRegionList] = useState<any[]>(
+    defaultSelectRegionList
+  );
+
   useEffect(() => {
     const $instance = Taro.getCurrentInstance();
-    if ($instance?.router?.params!.type) {
-      setType(Number($instance.router.params.type));
+    if ($instance?.router?.params.id) {
+      const id = Number($instance.router.params.id);
+      setAddressId(id);
+      getAddressDetail({ id }).then((res) => {
+        setAddress(res);
+      });
     }
+    getRegionList(1);
   }, []);
-  const saveAddress = () => {};
+
+  Taro.useDidShow(() => {
+    Taro.setNavigationBarTitle({
+      title: addressId > 0 ? "编辑收货信息" : "新增收货信息",
+    });
+  });
+
+  const getRegionList = async (regionId) => {
+    const res = await RegionList({ parentId: regionId });
+    const regionList = res.map((item) => {
+      //标记已选择的
+      if (
+        regionType == item.type &&
+        selectRegionList[regionType - 1].id == item.id
+      ) {
+        item.selected = true;
+      } else {
+        item.selected = false;
+      }
+      return item;
+    });
+    setRegionList(regionList);
+  };
+  const saveAddress = () => {
+    if (address.name == "" || address.name == undefined) {
+      showErrorToast("请输入姓名");
+      return false;
+    }
+    if (address.mobile == "" || address.mobile == undefined) {
+      showErrorToast("请输入手机号码");
+      return false;
+    }
+    if (address.district_id == 0 || address.district_id == undefined) {
+      showErrorToast("请输入省市区");
+      return false;
+    }
+    if (address.address == "" || address.address == undefined) {
+      showErrorToast("请输入详细地址");
+      return false;
+    }
+    SaveAddress({
+      id: address.id,
+      name: address.name,
+      mobile: address.mobile,
+      province_id: address.province_id,
+      city_id: address.city_id,
+      district_id: address.district_id,
+      address: address.address,
+      is_default: address.is_default,
+    }).then(() => {
+      Taro.navigateBack();
+    });
+  };
   const chooseRegion = () => {};
   const doneSelectRegion = () => {};
   const bindinputName = () => {};
-  const mobilechange = () => {};
+  const mobilechange = (e) => {
+    const mobile = e.detail.value;
+    if (testMobile(mobile)) {
+      setAddress({ ...address, mobile });
+    }
+  };
   const bindinputAddress = () => {};
   const cancelSelectRegion = () => {};
-  const switchChange = () => {};
+  const switchChange = (e) => {
+    const status = e.detail.value;
+    let is_default = 0;
+    if (status === true) {
+      is_default = 1;
+    }
+    setAddress({ ...address, is_default });
+  };
   const deleteAddress = () => {};
   const selectRegionType = () => {};
   const selectRegion = () => {};
@@ -47,7 +151,7 @@ const AddressDetail = () => {
                 className="a-input"
                 onInput={bindinputName}
                 placeholder="姓名"
-                value={address.name}
+                value={address?.name}
               />
             </div>
           </div>
@@ -61,7 +165,7 @@ const AddressDetail = () => {
                 className="a-input"
                 type="number"
                 onInput={mobilechange}
-                value={address.mobile}
+                value={address?.mobile}
                 placeholder="手机号码"
               />
             </div>
@@ -74,7 +178,7 @@ const AddressDetail = () => {
               <Input
                 cursorSpacing={100}
                 className="a-input"
-                value={address.full_region}
+                value={address?.full_region}
                 disabled
                 placeholder="选择省份、城市、区县"
               />
@@ -90,7 +194,7 @@ const AddressDetail = () => {
                 cursor-spacing="100"
                 className="a-input"
                 onInput={bindinputAddress}
-                value={address.address}
+                value={address?.address}
                 placeholder="详细地址, 如街道、小区或写字楼等"
               />
             </div>
@@ -100,8 +204,8 @@ const AddressDetail = () => {
           <div className="text">设为默认信息</div>
           <Switch
             className="switch"
-            checked={address.is_default}
-            onClick={switchChange}
+            checked={address?.is_default}
+            onChange={switchChange}
           />
         </div>
         <div className="btn-wrap" onClick={saveAddress}>

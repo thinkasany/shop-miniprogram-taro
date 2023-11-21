@@ -8,7 +8,7 @@ import iconFootPrintR from "@/images/icon/icon-footprint-r.png";
 import iconserviceR from "@/images/icon/icon-service-r.png";
 import iconAboutR from "@/images/icon/icon-about-r.png";
 import Taro from "@tarojs/taro";
-import { loginNow } from "../utils";
+import { loginNow } from "@/utils";
 
 import "./index.less";
 
