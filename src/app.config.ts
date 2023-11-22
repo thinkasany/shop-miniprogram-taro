@@ -7,6 +7,7 @@ export default defineAppConfig({
     "pages/ucenter/index",
     "pages/order-check/index",
     "pages/goods/index",
+    "pages/comment/index",
   ],
   subpackages: [
     {

@@ -33,6 +33,7 @@ const Goods = () => {
   const [info, setInfo] = useState<any>({});
   const [productList, setProductList] = useState<any>([]);
   const [specificationList, setSpecificationList] = useState<any>([]);
+  const [galleryImages, setGalleryImages] = useState<any>([]);
   const [priceChecked, setPriceChecked] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [openAttr, setOpenAttr] = useState(false);
@@ -88,6 +89,7 @@ const Goods = () => {
     setSpecificationList(specificationList);
     setProductList(productList);
     setCheckedSpecPrice(retail_price);
+    setGalleryImages(galleryImages);
     setLoading(1);
     console.log("res", res);
   };
@@ -112,7 +114,13 @@ const Goods = () => {
       setShowShareDialog(true);
     }
   };
-  const predivImage = () => {};
+  const previewImage = (e) => {
+    const current = e.currentTarget.dataset.src;
+    Taro.previewImage({
+      current: current, // 当前显示图片的http链接
+      urls: galleryImages, // 需要预览的图片http链接列表
+    });
+  };
   const clickSkuValue = () => {};
   const bindchange = (e) => {
     const current = e.detail.current;
@@ -123,7 +131,11 @@ const Goods = () => {
     setOpenAttr(false);
   };
   const switchAttrPop = () => setOpenAttr(true);
-  const goComment = () => {};
+  const goComment = () => {
+    Taro.navigateTo({
+      url: "/pages/comment/index?goodsid=" + id,
+    });
+  };
   const createShareImage = () => {
     Taro.navigateTo({
       url: "/pages/share/index?goodsid=" + id,
@@ -207,7 +219,7 @@ const Goods = () => {
                     return (
                       <SwiperItem className="item">
                         <img
-                          onClick={predivImage}
+                          onClick={previewImage}
                           data-src={item.img_url}
                           src={item.img_url}
                           className="slide-image"
