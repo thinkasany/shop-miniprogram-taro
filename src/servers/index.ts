@@ -47,4 +47,17 @@ export const GoodsComment = async (data) => await request({ url: "goods/comment"
 export const SaveUserId = async (data) => await request({ url: "goods/saveUserId", data });
 
 
+// 订单
+export const OrderSubmit = async (data) => await request({ url: "order/submit", data });// 提交订单
+export const OrderList = async (data) => await request({ url: "order/list", data });// 订单列表
+export const OrderDetail = async (data) => await request({ url: "order/detail", data });// 订单详情
+export const OrderDelete = async (data) => await request({ url: "order/delete", data });// 订单删除
+export const OrderCancel = async (data) => await request({ url: "order/cancel", data });// 取消订单
+export const OrderConfirm = async (data) => await request({ url: "order/confirm", data });// 物流详情
+export const OrderCount = async (data) => await request({ url: "order/count", data });// 获取订单数
+export const OrderCountInfo = async () => await request({ url: "order/orderCount" });// 我的页面获取订单数状态
+export const OrderExpressInfo = async (data) => await request({ url: "order/express", data });// 物流信息
+export const OrderGoods = async (data) => await request({ url: "order/orderGoods", data });// 获取checkout页面的商品列表
+
+
 

@@ -18,18 +18,25 @@ const Index = () => {
   const [info, setInfo] = useState<any>({});
 
   const goProfile = () => console.log("11");
-  const toOrderListTap = () => console.log("11");
+  const toOrderListTap = (event) => {
+    if (loginNow()) {
+      const showType = event.currentTarget.dataset.index;
+      Taro.setStorageSync("showType", showType);
+
+      Taro.navigateTo({
+        url: "/pages/center/orderList?showType=0",
+      });
+    }
+  };
   const toAddressList = () => {
-    const res = loginNow();
-    if (res === true) {
+    if (loginNow()) {
       Taro.navigateTo({
         url: "/pages/center/address?type=0",
       });
     }
   };
   const toFootprint = () => {
-    const res = loginNow();
-    if (res === true) {
+    if (loginNow()) {
       Taro.navigateTo({
         url: "/pages/center/footprint",
       });
