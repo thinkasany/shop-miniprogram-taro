@@ -24,4 +24,27 @@ export const RegionList = async (data) => await request({ url: "region/list", da
 export const FootprintList = async (data) => await request({ url: "footprint/list", data }); //足迹列表
 export const FootprintDelete = async (data) => await request({ url: "footprint/delete", data }); //删除足迹
 
+// 分类
+export const CatalogList = async () => await request({ url: "catalog/index" }); //分类目录全部分类数据接口
+export const CatalogCurrent = async (data) => await request({ url: "catalog/current", data }); //分类目录当前分类数据接口
+export const GetCurrentList = async (data) => await request({ url: "catalog/currentlist", data });
+
+// 购物车
+export const CartAdd = async (data) => await request({ url: "cart/add", data });// 添加商品到购物车
+export const CartList = async (data) => await request({ url: "cart/index", data });//获取购物车的数据
+export const CartUpdate = async (data) => await request({ url: "cart/update", data });// 更新购物车的商品
+export const CartDelete = async (data) => await request({ url: "cart/delete", data });// 删除购物车的商品
+export const CartChecked = async (data) => await request({ url: "cart/checked", data });// 选择或取消选择商品
+export const CartGoodsCount = async (data) => await request({ url: "cart/goodsCount", data });// 获取购物车商品件数
+export const checkout = async (data) => await request({ url: "cart/checkout", data });// 下单前信息确认
+
+// 商品
+export const GoodsCount = async () => await request({ url: "goods/count" });// 统计商品总数
+export const GoodsDetail = async (data) => await request({ url: "goods/detail", data });// 获得商品的详情
+export const GoodsList = async (data) => await request({ url: "goods/list", data });// 获得商品列表
+export const GoodsShare = async (data) => await request({ url: "goods/goodsShare", data });// 获得商品的详情
+export const GoodsComment = async (data) => await request({ url: "goods/comment", data });// 获得商品评价
+export const SaveUserId = async (data) => await request({ url: "goods/saveUserId", data });
+
+
 
