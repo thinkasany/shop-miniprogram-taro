@@ -42,12 +42,11 @@ const Goods = () => {
     const $instance = Taro.getCurrentInstance();
     if ($instance?.router?.params!.id) {
       setId($instance?.router?.params!.id);
-      console.log($instance?.router?.params!.id);
       getGoodsInfo($instance?.router?.params!.id);
     }
     const currentUserInfo = Taro.getStorageSync("userInfo");
-    const info = Taro.getSystemInfoSync();
-    const sysHeight = info.windowHeight - 100;
+    const SystemInfo = Taro.getSystemInfoSync();
+    const sysHeight = SystemInfo.windowHeight - 100;
     const currentUserId = userInfo.id;
     if (userId) {
       setUserId(currentUserId);
@@ -55,8 +54,9 @@ const Goods = () => {
     }
     setPriceChecked(false);
     setSysHeight(sysHeight);
-    // console.log(currentUserInfo, sysHeight);
     getCartCount();
+    const globalData = Taro.getStorageSync("globalData");
+    setInfo(globalData.info);
   });
   const getCartCount = () => {
     CartGoodsCount().then((res) => {
@@ -78,14 +78,11 @@ const Goods = () => {
     for (const item of res.gallery) {
       galleryImages.push(item.img_url);
     }
-    const {
-      info: { goods_number, retail_price },
-      gallery,
-      specificationList,
-      productList,
-    } = res;
+    const { info: goodsInfo, gallery, specificationList, productList } = res;
+    const { goods_number, retail_price } = goodsInfo;
+    console.log("info", goodsInfo);
 
-    setGoods(info);
+    setGoods(goodsInfo);
     setGoodsNumber(goods_number);
     setGallery(gallery);
     setSpecificationList(specificationList);
@@ -129,8 +126,8 @@ const Goods = () => {
   const goComment = () => {};
   const createShareImage = () => {
     Taro.navigateTo({
-      url: '/pages/share/index?goodsid=' + id
-  })
+      url: "/pages/share/index?goodsid=" + id,
+    });
   };
   const hideDialog = () => setShowShareDialog(false);
   const cutNumber = () => {};
@@ -388,32 +385,34 @@ const Goods = () => {
                 <div className="icon-text">购物车</div>
               </div>
             </div>
-            {goods.goods_number > 0 && goods.is_on_sale == 1 && (
-              <div>
-                {goodsNumber > 0 ? (
-                  <div>
-                    <div className="to-cart-btn" onClick={addToCart}>
-                      加入购物车
+            {goods.goods_number > 0 && goods.is_on_sale == 1 ? (
+              <div style={{ width: "70%" }}>
+                {
+                  goodsNumber > 0 && (
+                    <div>
+                      <div className="to-cart-btn" onClick={addToCart}>
+                        加入购物车
+                      </div>
+                      <div className="to-pay-btn" onClick={fastToCart}>
+                        立即购买
+                      </div>
                     </div>
-                    <div className="to-pay-btn" onClick={fastToCart}>
-                      立即购买
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="cart-empty">商品已售罄</div>
-                  </div>
+                  )
+                  // : (
+                  //   <div>
+                  //     <div className="cart-empty">商品已售罄</div>
+                  //   </div>
+                  // )
+                }
+              </div>
+            ) : (
+              <div style={{ width: "70%" }}>
+                {goods.goods_number <= 0 && (
+                  <div className="cart-empty">商品已售罄</div>
                 )}
-              </div>
-            )}
-            {goods.goods_number <= 0 && (
-              <div>
-                <div className="cart-empty">商品已售罄</div>
-              </div>
-            )}
-            {goods.is_on_sale == 0 && (
-              <div>
-                <div className="cart-empty">商品已下架</div>
+                {goods.is_on_sale == 0 && (
+                  <div className="cart-empty">商品已下架</div>
+                )}
               </div>
             )}
           </div>
