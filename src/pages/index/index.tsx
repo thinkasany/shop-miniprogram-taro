@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IndexUrl, ShowSettings } from "@/servers/index";
-import loadingGIF from "@/images/icon/loading.gif";
+import Loading from "@/components";
 import contactPng from "@/images/icon/contact.png";
 import searchPng from "@/images/icon/search.png";
 import { Swiper, SwiperItem, Image, Navigator } from "@tarojs/components";
@@ -313,15 +313,7 @@ const Index = () => {
       <div className="no-more-goods ">没有更多商品啦</div>
     </div>
   ) : (
-    <div className="loading">
-      <img
-        className="img"
-        src={loadingGIF}
-        alt="loading"
-        style={{ height: sysHeight }}
-      />
-      <div className="text">大风吹啊吹</div>
-    </div>
+    <Loading height={sysHeight} />
   );
 };
 
