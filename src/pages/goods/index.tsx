@@ -10,6 +10,9 @@ import iconPyq from "@/images/icon/pyq.png";
 import iconWeixin from "@/images/icon/weixin.png";
 import { useState } from "react";
 import { Input, Swiper, SwiperItem } from "@tarojs/components";
+import { CartGoodsCount, GoodsDetail } from "@/servers";
+import Taro from "@tarojs/taro";
+import { loginNow } from "@/utils";
 import Loading from "../../components";
 
 import "./index.less";
@@ -17,6 +20,7 @@ import "./index.less";
 const Goods = () => {
   const [loading, setLoading] = useState(1);
   const [number, setNumber] = useState(1);
+  const [id, setId] = useState<string | null>(null);
   const [goods, setGoods] = useState<any>({});
   const [checkedSpecText, setCheckedSpecText] = useState("");
   const [tmpSpecText, setTmpSpecText] = useState("");
@@ -24,29 +28,150 @@ const Goods = () => {
   const [checkedSpecPrice, setCheckedSpecPrice] = useState(0);
   const [sysHeight, setSysHeight] = useState(20);
   const [gallery, setGallery] = useState<any>([]);
-  const [priceChecked, setPriceChecked] = useState(false);
   const [cartGoodsCount, setCartGoodsCount] = useState(0);
   const [goodsNumber, setGoodsNumber] = useState(1);
   const [info, setInfo] = useState<any>({});
   const [productList, setProductList] = useState<any>([]);
   const [specificationList, setSpecificationList] = useState<any>([]);
+  const [priceChecked, setPriceChecked] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const goIndexPage = () => {};
+  const [openAttr, setOpenAttr] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [userInfo, setUserInfo] = useState<any>({});
+  Taro.useDidShow(() => {
+    const $instance = Taro.getCurrentInstance();
+    if ($instance?.router?.params!.id) {
+      setId($instance?.router?.params!.id);
+      console.log($instance?.router?.params!.id);
+      getGoodsInfo($instance?.router?.params!.id);
+    }
+    const currentUserInfo = Taro.getStorageSync("userInfo");
+    const info = Taro.getSystemInfoSync();
+    const sysHeight = info.windowHeight - 100;
+    const currentUserId = userInfo.id;
+    if (userId) {
+      setUserId(currentUserId);
+      setUserInfo(currentUserInfo);
+    }
+    setPriceChecked(false);
+    setSysHeight(sysHeight);
+    // console.log(currentUserInfo, sysHeight);
+    getCartCount();
+  });
+  const getCartCount = () => {
+    CartGoodsCount().then((res) => {
+      setCartGoodsCount(res.cartTotal.goodsCount);
+    });
+  };
+  const getGoodsInfo = async (id) => {
+    const res = await GoodsDetail({ id });
+    let _specificationList = res.specificationList;
+    // 如果仅仅存在一种货品，那么商品页面初始化时默认checked
+    if (_specificationList.valueList.length == 1) {
+      _specificationList.valueList[0].checked = true;
+      setCheckedSpecText("已选择：" + _specificationList.valueList[0].value);
+      setTmpSpecText("已选择：" + _specificationList.valueList[0].value);
+    } else {
+      setCheckedSpecText("请选择规格和数量");
+    }
+    const galleryImages: any[] = [];
+    for (const item of res.gallery) {
+      galleryImages.push(item.img_url);
+    }
+    const {
+      info: { goods_number, retail_price },
+      gallery,
+      specificationList,
+      productList,
+    } = res;
+
+    setGoods(info);
+    setGoodsNumber(goods_number);
+    setGallery(gallery);
+    setSpecificationList(specificationList);
+    setProductList(productList);
+    setCheckedSpecPrice(retail_price);
+    setLoading(1);
+    console.log("res", res);
+  };
+  const goIndexPage = () => {
+    Taro.switchTab({
+      url: "/pages/index/index",
+    });
+  };
+  const openCartPage = () => {
+    Taro.switchTab({
+      url: "/pages/cart/index",
+    });
+  };
   const addToCart = () => {};
   const fastToCart = () => {};
-  const shareTo = () => {};
+  const shareTo = () => {
+    const userInfo = Taro.getStorageSync("userInfo");
+    if (userInfo == "") {
+      loginNow();
+      return false;
+    } else {
+      setShowShareDialog(true);
+    }
+  };
   const predivImage = () => {};
   const clickSkuValue = () => {};
-  const bindchange = () => {};
+  const bindchange = (e) => {
+    const current = e.detail.current;
+    setCurrent(current);
+  };
   const handleTap = () => {};
-  const closeAttr = () => {};
-  const openCartPage = () => {};
-  const switchAttrPop = () => {};
+  const closeAttr = () => {
+    setOpenAttr(false);
+  };
+  const switchAttrPop = () => setOpenAttr(true);
   const goComment = () => {};
-  const createShareImage = () => {};
-  const hideDialog = () => {};
+  const createShareImage = () => {
+    Taro.navigateTo({
+      url: '/pages/share/index?goodsid=' + id
+  })
+  };
+  const hideDialog = () => setShowShareDialog(false);
   const cutNumber = () => {};
-  const addNumber = () => {};
+  const addNumber = () => {
+    setNumber(Number(number) + 1);
+    console.log("number", number);
+    const checkedProductArray = getCheckedProductItem(getCheckedSpecKey());
+    let checkedProduct = checkedProductArray;
+    let check_number = number + 1;
+    if (checkedProduct.goods_number < check_number) {
+      // fime: 这一块暂时还没用上
+      // this.setData({
+      //     disabled: true
+      // });
+    }
+  };
+  const getCheckedProductItem = (key) => {
+    return productList.filter((v) => v.goods_specification_ids == key);
+  };
+  const getCheckedSpecKey = () => {
+    let checkedValue = getCheckedSpecValue().map((v) => v.valueId);
+    return checkedValue.join("_");
+  };
+  //获取选中的规格信息
+  const getCheckedSpecValue = () => {
+    let checkedValues: any[] = [];
+    let _specificationList = specificationList;
+    let _checkedObj = {
+      nameId: _specificationList.specification_id,
+      valueId: 0,
+      valueText: "",
+    };
+    for (let j = 0; j < _specificationList.valueList.length; j++) {
+      if (_specificationList.valueList[j].checked) {
+        _checkedObj.valueId = _specificationList.valueList[j].id;
+        _checkedObj.valueText = _specificationList.valueList[j].value;
+      }
+    }
+    checkedValues.push(_checkedObj);
+    return checkedValues;
+  };
   return (
     <div>
       {loading === 1 ? (
@@ -153,7 +278,10 @@ const Goods = () => {
               </div>
             </div>
           </div>
-          <div className="attr-pop-box" onClick={closeAttr}>
+          <div
+            className={`attr-pop-box ${!openAttr ? "hidden" : ""} `}
+            // onClick={closeAttr}
+          >
             <div className="attr-pop" onClick={handleTap}>
               <div className="close" onClick={closeAttr}>
                 <img className="icon" src={iconClose} />
