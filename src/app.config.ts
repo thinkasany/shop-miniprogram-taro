@@ -5,6 +5,8 @@ export default defineAppConfig({
     "pages/cart/index",
     "pages/app-auth/index",
     "pages/ucenter/index",
+    "pages/order-check/index",
+    "pages/goods/index",
   ],
   subpackages: [
     {

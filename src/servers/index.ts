@@ -32,9 +32,9 @@ export const GetCurrentList = async (data) => await request({ url: "catalog/curr
 // 购物车
 export const CartAdd = async (data) => await request({ url: "cart/add", data });// 添加商品到购物车
 export const CartList = async () => await request({ url: "cart/index" });//获取购物车的数据
-export const CartUpdate = async (data) => await request({ url: "cart/update", data });// 更新购物车的商品
-export const CartDelete = async (data) => await request({ url: "cart/delete", data });// 删除购物车的商品
-export const CartChecked = async (data) => await request({ url: "cart/checked", data });// 选择或取消选择商品
+export const CartUpdate = async (data) => await request({ url: "cart/update", method: "post", data });// 更新购物车的商品
+export const CartDelete = async (data) => await request({ url: "cart/delete", method: "post", data });// 删除购物车的商品
+export const CartChecked = async (data) => await request({ url: "cart/checked", method: "post", data });// 选择或取消选择商品
 export const CartGoodsCount = async () => await request({ url: "cart/goodsCount" });// 获取购物车商品件数
 export const checkout = async (data) => await request({ url: "cart/checkout", data });// 下单前信息确认
 
