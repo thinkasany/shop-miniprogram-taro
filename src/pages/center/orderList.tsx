@@ -15,6 +15,8 @@ const OrderListComponent = () => {
   const [orderList, setOrderList] = useState<any>([]);
 
   Taro.useDidShow(() => {
+    const showType = Taro.getStorageSync("showType");
+    setShowType(Number(showType));
     getOrderList();
     getOrderInfo();
   });
@@ -44,7 +46,11 @@ const OrderListComponent = () => {
     getOrderInfo();
   };
   const payOrder = () => {};
-  const toIndexPage = () => {};
+  const toIndexPage = () => {
+    Taro.switchTab({
+      url: "/pages/index/index",
+    });
+  };
   const toOrderDetails = (e) => {
     const orderId = e.currentTarget.dataset.id;
     Taro.setStorageSync("orderId", orderId);

@@ -8,6 +8,8 @@ import locationIcon from "@/images/icon/location.png";
 import loadingIcon from "@/images/icon/loading.gif";
 import { useState } from "react";
 import { Input } from "@tarojs/components";
+import Taro from "@tarojs/taro";
+import { OrderExpressInfo, OrderDetail } from "@/servers";
 import "./orderDetail.less";
 
 const OrderDedeail = () => {
@@ -20,11 +22,50 @@ const OrderDedeail = () => {
   const [goodsCount, setGoodsCount] = useState(0);
   const [onPosting, setOnPosting] = useState(0);
   const c_remainTime: any = {};
-  const copyText = () => {};
+  Taro.useDidShow(() => {
+    const orderId = Taro.getStorageSync("orderId");
+    getOrderDetail(orderId);
+    getExpressInfo(orderId);
+  });
+  const getOrderDetail = (orderId) => {
+    OrderDetail({ orderId }).then((res) => {
+      const { orderInfo, orderGoods, handleOption, textCode, goodsCount } = res;
+      setOrderInfo(orderInfo);
+      setOrderGoods(orderGoods);
+      setHandleOption(handleOption);
+      setTextCode(textCode);
+      setGoodsCount(goodsCount);
+      if (textCode.receive) {
+      }
+      console.log(res);
+    });
+  };
+  const getExpressInfo = (orderId) => {
+    setOnPosting(0);
+    OrderExpressInfo({ orderId }).then((res) => {
+      console.log(res);
+    });
+  };
+  const copyText = (e) => {
+    const data = e.currentTarget.dataset.text;
+    Taro.setClipboardData({
+      data: data,
+      success(res) {
+        Taro.getClipboardData({
+          success(res) {},
+        });
+      },
+    });
+  };
   const clearTimer = () => {};
   const deleteOrder = () => {};
   const confirmOrder = () => {};
-  const reOrderAgain = () => {};
+  const reOrderAgain = () => {
+    const orderId = Taro.getStorageSync("orderId");
+    Taro.redirectTo({
+      url: "/pages/order-check/index?addtype=2&orderFrom=" + orderId,
+    });
+  };
   const toGoodsList = () => {};
   const cancelOrder = () => {};
   const payOrder = () => {};
@@ -96,13 +137,13 @@ const OrderDedeail = () => {
           </div>
         </div>
       </div>
-      {orderInfo.shipping_status && onPosting == 0 && (
+      {!!orderInfo.shipping_status && onPosting == 0 && (
         <div className="onPosting">
           <img className="loading" src={loadingIcon} />
           <div className="t">快递信息查询中。。。</div>
         </div>
       )}
-      {orderInfo.shipping_status && onPosting == 1 && (
+      {!!orderInfo.shipping_status && onPosting == 1 && (
         <div className="express">
           <div className="express-info-header">
             {express.traces.length == 0 ? (
@@ -114,7 +155,7 @@ const OrderDedeail = () => {
                 </div>
                 <button
                   className="copy-text"
-                  data-text="{{express.logistic_code}}"
+                  data-text={express.logistic_code}
                   onClick={copyText}
                 >
                   复制快递单号
@@ -143,7 +184,7 @@ const OrderDedeail = () => {
               </div>
               <button
                 className="copy-text"
-                data-text="{{express.logistic_code}}"
+                data-text={express.logistic_code}
                 onClick={copyText}
               >
                 复制快递单号
@@ -229,31 +270,31 @@ const OrderDedeail = () => {
             <div className="row-label2">创建时间：</div>
             <div className="right-text2">{orderInfo.add_time}</div>
           </div>
-          {orderInfo.pay_time && (
+          {!!orderInfo.pay_time && (
             <div className="row-box2">
               <div className="row-label2">支付交易号：</div>
               <div className="right-text2">{orderInfo.pay_id}</div>
             </div>
           )}
-          {orderInfo.pay_time && (
+          {!!orderInfo.pay_time && (
             <div className="row-box2">
               <div className="row-label2">付款时间：</div>
               <div className="right-text2">{orderInfo.pay_time}</div>
             </div>
           )}
-          {orderInfo.shipping_time && (
+          {!!orderInfo.shipping_time && (
             <div className="row-box2">
               <div className="row-label2">发货时间：</div>
               <div className="right-text2">{orderInfo.shipping_time}</div>
             </div>
           )}
-          {orderInfo.confirm_time && (
+          {!!orderInfo.confirm_time && (
             <div className="row-box2">
               <div className="row-label2">确认时间：</div>
               <div className="right-text2">{orderInfo.confirm_time}</div>
             </div>
           )}
-          {orderInfo.dealdone_time && (
+          {!!orderInfo.dealdone_time && (
             <div className="row-box2">
               <div className="row-label2">完成时间：</div>
               <div className="right-text2">{orderInfo.dealdone_time}</div>

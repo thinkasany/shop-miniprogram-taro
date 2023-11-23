@@ -16,7 +16,11 @@ const Index = () => {
   const [hasUserInfo, setHasUserInfo] = useState(true);
   const [userInfo, setUserInfo] = useState<any>({});
   const [info, setInfo] = useState<any>({});
-
+  Taro.useDidShow(() => {
+    const globalData = Taro.getStorageSync("globalData");
+    setInfo(globalData.info);
+    console.log("globalData", globalData);
+  });
   const goProfile = () => console.log("11");
   const toOrderListTap = (event) => {
     if (loginNow()) {
@@ -24,7 +28,7 @@ const Index = () => {
       Taro.setStorageSync("showType", showType);
 
       Taro.navigateTo({
-        url: "/pages/center/orderList?showType=0",
+        url: "/pages/center/orderList?showType=" + showType,
       });
     }
   };
@@ -84,7 +88,6 @@ const Index = () => {
           </div>
         )}
       </div>
-      {/* <!-- <ad unit-id="adunit-89ae0a0b6860dc9f" ad-type="grid" grid-opacity="0.8" grid-count="5" ad-theme="white"></ad> --> */}
       <div className="order-container">
         <div className="header" data-index="0" onClick={toOrderListTap}>
           <div className="top-title">
