@@ -99,6 +99,12 @@ const Index = () => {
     });
   };
 
+  const goSearch = () => {
+    Taro.navigateTo({
+      url: "/pages/search/index",
+    });
+  };
+
   return loading === 1 ? (
     <div className="container">
       {showContact === 1 ? (
@@ -113,7 +119,7 @@ const Index = () => {
           </button>
         </div>
       ) : null}
-      <div className="search">
+      <div className="search" onClick={goSearch}>
         <img className="icon" src={searchPng}></img>
         <text className="txt">搜索,发现更多好物</text>
       </div>

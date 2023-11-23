@@ -37,7 +37,7 @@ const Index = () => {
   return (
     <div className="container">
       <div className="search">
-        <Navigator url="/pages/search/search" className="input">
+        <Navigator url="/pages/search/index" className="input">
           <img className="icon" src={searchPng}></img>
           <span className="txt">搜索, 共{goodsCount}款好味</span>
         </Navigator>

@@ -8,6 +8,7 @@ export default defineAppConfig({
     "pages/order-check/index",
     "pages/goods/index",
     "pages/comment/index",
+    "pages/search/index",
   ],
   subpackages: [
     {
