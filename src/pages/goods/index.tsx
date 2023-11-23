@@ -158,7 +158,52 @@ const Goods = () => {
   const isCheckedAllSpec = () => {
     return !getCheckedSpecValue().some((v) => v.valueId == 0);
   };
-  const fastToCart = () => {};
+  const fastToCart = () => {
+    loginNow();
+    const userInfo = Taro.getStorageSync("userInfo");
+    if (userInfo == "") {
+      return false;
+    }
+    if (!openAttr) {
+      setOpenAttr(!openAttr);
+    } else {
+      //提示选择完整规格
+      if (!isCheckedAllSpec()) {
+        showErrorToast("请选择规格");
+        return false;
+      }
+      //根据选中的规格，判断是否有对应的sku信息
+      let checkedProductArray = getCheckedProductItem(getCheckedSpecKey());
+      if (!checkedProductArray || checkedProductArray.length <= 0) {
+        //找不到对应的product信息，提示没有库存
+        showErrorToast("库存不足");
+        return false;
+      }
+      let checkedProduct = checkedProductArray[0];
+      //验证库存
+      if (checkedProduct.goods_number < number) {
+        //要买的数量比库存多
+        showErrorToast("库存不足");
+        return false;
+      }
+      //添加到购物车
+      Taro.showLoading({
+        title: "",
+        mask: true,
+      });
+      CartAdd({
+        addType: 1, // 0：正常加入购物车，1:立即购买，2:再来一单
+        goodsId: id,
+        number: number,
+        productId: checkedProduct.id,
+      }).then(() => {
+        Taro.hideLoading();
+        Taro.navigateTo({
+          url: "/pages/order-check/index?addtype=1",
+        });
+      });
+    }
+  };
   const shareTo = () => {
     const userInfo = Taro.getStorageSync("userInfo");
     if (userInfo == "") {
