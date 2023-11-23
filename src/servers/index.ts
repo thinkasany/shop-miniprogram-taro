@@ -25,12 +25,12 @@ export const RegionList = async (data) => await request({ url: "region/list", da
 
 // 足迹
 export const FootprintList = async (data) => await request({ url: "footprint/list", data }); //足迹列表
-export const FootprintDelete = async (data) => await request({ url: "footprint/delete", data }); //删除足迹
+export const FootprintDelete = async (data) => await request({ url: "footprint/delete", data, method: "post" }); //删除足迹
 
 // 分类
 export const CatalogList = async () => await request({ url: "catalog/index" }); //分类目录全部分类数据接口
 export const CatalogCurrent = async (data) => await request({ url: "catalog/current", data }); //分类目录当前分类数据接口
-export const GetCurrentList = async (data) => await request({ url: "catalog/currentlist", data });
+export const GetCurrentList = async (data) => await request({ url: "catalog/currentlist", data, method: "post" });
 
 // 购物车
 export const CartAdd = async (data) => await request({ url: "cart/add", method: "post", data });// 添加商品到购物车

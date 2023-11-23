@@ -4,12 +4,14 @@ import footprintPng from "@/images/icon/footprint.png";
 import trash9Png from "@/images/icon/trash-9.png";
 import soldOutPng from "@/images/icon/sold-out.png";
 import { Navigator } from "@tarojs/components";
-import { FootprintList } from "@/servers";
+import { FootprintList, FootprintDelete } from "@/servers";
+import Taro from "@tarojs/taro";
 import "./footprint.less";
 
 const Footprint = () => {
   const [hasPrint, setHasPrint] = useState(1);
   const [footprintList, setFootprintList] = useState<any[]>([]);
+  const [allFootprintList, setAllFootprintList] = useState<any[]>([]);
   const allPage = 1;
   const size = 8;
   useEffect(() => {
@@ -21,7 +23,7 @@ const Footprint = () => {
 
       console.log("res", res);
 
-      let f1 = footprintList;
+      let f1: any[] = [];
       let f2 = res.data;
       for (let i = 0; i < f2.length; i++) {
         let last = f1.length - 1;
@@ -33,17 +35,35 @@ const Footprint = () => {
           f1.push(tmp);
         }
       }
-      setFootprintList([...f1]);
+      setFootprintList(f1);
+      setAllFootprintList(allFootprintList.concat(res.data));
+    });
+  };
+  const deletePrint = (e) => {
+    e.stopPropagation();
+    const id = e.currentTarget.dataset.val;
+    FootprintDelete({ footprintId: id }).then(() => {
+      Taro.showToast({
+        title: "取消成功",
+        icon: "success",
+        mask: true,
+      });
+      setFootprintList([]);
+      setAllFootprintList([]);
+      getFootprintList();
     });
   };
 
-  const toIndexPage = () => {};
+  const toIndexPage = () => {
+    Taro.switchTab({
+      url: "/pages/index/index",
+    });
+  };
   return (
     <div className="container">
       {hasPrint === 1 ? (
         <div className="print-goods">
-          {footprintList.map((item) => {
-            console.log("item", item);
+          {footprintList.map((item, index) => {
             return (
               <div className="day-item">
                 {item.length > 0 && (
@@ -51,20 +71,23 @@ const Footprint = () => {
                 )}
                 <div className="item-box">
                   {item.map((iitem, iindex) => {
-                    console.log("iitem", iitem);
                     return (
                       <Navigator
                         hover-className="none"
-                        // data-index="{{index}}"
-                        // data-iindex="{{iindex}}"
+                        data-index={index}
+                        data-iindex={iindex}
                         className={`item ${iindex % 2 == 0 ? "left" : "right"}`}
-                        url="/pages/goods/goods?id={{iitem.goods_id}}"
+                        onClick={() =>
+                          Taro.navigateTo({
+                            url: `/pages/goods/index?id=${iitem.goods_id}`,
+                          })
+                        }
                       >
                         <img
                           src={trash9Png}
                           data-val={iitem.id}
                           className="cancel-print"
-                          // catchtap='deletePrint'
+                          onClick={deletePrint}
                         />
                         <div className="box">
                           <img

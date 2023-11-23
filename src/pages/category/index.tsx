@@ -4,7 +4,13 @@ import { Navigator, ScrollView, Image } from "@tarojs/components";
 import searchPng from "@/images/icon/search.png";
 import soldOutPng from "@/images/icon/sold-out.png";
 import { useState } from "react";
-import { ShowSettings, CatalogList, GoodsCount } from "@/servers";
+import {
+  ShowSettings,
+  CatalogList,
+  GoodsCount,
+  GetCurrentList,
+  CatalogCurrent,
+} from "@/servers";
 import Taro from "@tarojs/taro";
 import "./index.less";
 
@@ -17,9 +23,12 @@ const Index = () => {
   const [list, setList] = useState<any[]>([]);
   const [navList, setNavList] = useState<any[]>([]);
   const [currentCategory, setCurrentCategory] = useState<any>({});
+  const allPage = 1;
+  const size = 8;
   Taro.useDidShow(() => {
     getChannelShowInfo();
     getCatalog();
+    getCurrentList(0);
   });
   const getCatalog = async () => {
     const list = await CatalogList();
@@ -27,7 +36,33 @@ const Index = () => {
     const res = await GoodsCount();
     setGoodsCount(res.goodsCount);
   };
-  const switchCate = () => {};
+  const switchCate = (e) => {
+    let id = e.currentTarget.dataset.id;
+    if (id == nowId) {
+      return false;
+    } else {
+      setLoading(1);
+      if (id === 0) {
+        setCurrentCategory({});
+      } else {
+        getCurrentList(id);
+        getCurrentCategory(id);
+      }
+      Taro.setStorageSync("categoryId", id);
+      setNowId(Number(id));
+      setLoading(0);
+    }
+  };
+  const getCurrentList = (id) => {
+    GetCurrentList({ size, page: allPage, id }).then((res) => {
+      setList([...res.data]);
+    });
+  };
+  const getCurrentCategory = (id) => {
+    CatalogCurrent({ id }).then((res) => {
+      setCurrentCategory(res);
+    });
+  };
   const onBottom = () => {};
   const getChannelShowInfo = async () => {
     const res = await ShowSettings();
@@ -45,7 +80,7 @@ const Index = () => {
       <div className="catalog">
         <ScrollView className="nav" scroll-y="true">
           <div
-            className="item {{ nowId == 0 ?'active' : ''}}"
+            className={`item ${nowId === 0 ? "active" : ""}`}
             onClick={switchCate}
             data-id="0"
           >
@@ -66,7 +101,7 @@ const Index = () => {
         <ScrollView className="cate" scroll-y="true" onScrollToLower={onBottom}>
           {loading === 0 ? (
             <div>
-              {nowId != 0 && index_banner_img == 1 && (
+              {nowId !== 0 && index_banner_img == 1 && (
                 <div className="banner-container">
                   <Image
                     mode="aspectFill"
@@ -102,7 +137,7 @@ const Index = () => {
                       <Navigator
                         hover-className="none"
                         className="navi-url"
-                        url="/pages/goods/goods?id={{item.id}}"
+                        url={`/pages/goods/index?id=${item.id}`}
                       >
                         <div className="box">
                           <img src={item.list_pic_url} className="image">
