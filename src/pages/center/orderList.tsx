@@ -1,27 +1,57 @@
 /* eslint-disable react/jsx-key */
 import noOrderPng from "@/images/icon/no-order.png";
 import { useState } from "react";
-import { OrderCountInfo } from "@/servers";
+import { OrderCountInfo, OrderList } from "@/servers";
 import Taro from "@tarojs/taro";
 import "./orderList.less";
 
-const OrderList = () => {
+const OrderListComponent = () => {
   const [showTips, setShowTips] = useState(0);
   const [showType, setShowType] = useState(0);
+  const [allPage, setAllPage] = useState(1);
+  const [allCount, setAllCount] = useState(0);
+  const [size, setSize] = useState(8);
   const [status, setStatus] = useState<any>({});
   const [orderList, setOrderList] = useState<any>([]);
 
   Taro.useDidShow(() => {
+    getOrderList();
     getOrderInfo();
   });
+  const getOrderList = (showType = 0) => {
+    OrderList({ showType, size, page: allPage }).then((res) => {
+      console.log("res", res);
+      const { count, currentPage, data } = res;
+      setAllCount(count);
+      setOrderList(data);
+      setAllPage(currentPage);
+    });
+  };
   const getOrderInfo = async () => {
     const res = await OrderCountInfo();
     setStatus(res);
   };
-  const switchTab = () => {};
+  const switchTab = (event) => {
+    const showType = event.currentTarget.dataset.index;
+    console.log("showType", showType);
+    Taro.setStorageSync("showType", showType);
+    setShowType(Number(showType));
+    setOrderList([]);
+    setAllPage(1);
+    setAllCount(0);
+    setSize(8);
+    getOrderList(showType);
+    getOrderInfo();
+  };
   const payOrder = () => {};
   const toIndexPage = () => {};
-  const toOrderDetails = () => {};
+  const toOrderDetails = (e) => {
+    const orderId = e.currentTarget.dataset.id;
+    Taro.setStorageSync("orderId", orderId);
+    Taro.navigateTo({
+      url: "/pages/center/orderDetails",
+    });
+  };
   return (
     <div className="container">
       <div className="tab-nav">
@@ -147,4 +177,4 @@ const OrderList = () => {
   );
 };
 
-export default OrderList;
+export default OrderListComponent;
