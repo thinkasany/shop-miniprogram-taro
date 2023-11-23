@@ -14,7 +14,14 @@ export default defineAppConfig({
   subpackages: [
     {
       root: "pages/center",
-      pages: ["about", "address", "addressDetail", "footprint", "orderList"],
+      pages: [
+        "about",
+        "address",
+        "addressDetail",
+        "footprint",
+        "orderList",
+        "orderDetail",
+      ],
     },
   ], // 分包
   window: {

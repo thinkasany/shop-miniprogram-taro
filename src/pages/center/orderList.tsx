@@ -49,7 +49,7 @@ const OrderListComponent = () => {
     const orderId = e.currentTarget.dataset.id;
     Taro.setStorageSync("orderId", orderId);
     Taro.navigateTo({
-      url: "/pages/center/orderDetails",
+      url: "/pages/center/orderDetail",
     });
   };
   return (
