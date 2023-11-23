@@ -261,7 +261,7 @@ const Index = () => {
                     key={iitem.id}
                     hoverClass="none"
                     className="navi-url"
-                    url={`/pages/goods/goods?id=${iitem.id}`}
+                    url={`/pages/goods/index?id=${iitem.id}`}
                   >
                     <div className="box">
                       <img src={iitem.list_pic_url} className="image">

@@ -10,9 +10,9 @@ import iconPyq from "@/images/icon/pyq.png";
 import iconWeixin from "@/images/icon/weixin.png";
 import { useState } from "react";
 import { Input, Swiper, SwiperItem } from "@tarojs/components";
-import { CartGoodsCount, GoodsDetail } from "@/servers";
+import { CartGoodsCount, GoodsDetail, CartAdd } from "@/servers";
 import Taro from "@tarojs/taro";
-import { loginNow } from "@/utils";
+import { loginNow, showErrorToast, showSuccessToast } from "@/utils";
 import Loading from "../../components";
 
 import "./index.less";
@@ -103,7 +103,61 @@ const Goods = () => {
       url: "/pages/cart/index",
     });
   };
-  const addToCart = () => {};
+  const addToCart = () => {
+    loginNow();
+    const userInfo = Taro.getStorageSync("userInfo");
+    const productLength = productList.length;
+    if (userInfo === "") {
+      return false;
+    }
+    if (!openAttr && productLength !== 1) {
+      //打开规格选择窗口
+      setOpenAttr(!openAttr);
+    } else {
+      //提示选择完整规格
+      if (!isCheckedAllSpec()) {
+        showErrorToast("请选择规格");
+        return false;
+      }
+      //根据选中的规格，判断是否有对应的sku信息
+      let checkedProductArray = getCheckedProductItem(getCheckedSpecKey());
+      if (!checkedProductArray || checkedProductArray.length <= 0) {
+        //找不到对应的product信息，提示没有库存
+        showErrorToast("库存不足");
+        return false;
+      }
+      let checkedProduct = checkedProductArray[0];
+      //验证库存
+      if (checkedProduct.goods_number < number) {
+        //要买的数量比库存多
+        showErrorToast("库存不足");
+        return false;
+      }
+      Taro.showLoading({
+        title: "",
+        mask: true,
+      });
+      CartAdd({
+        addType: 0,
+        goodsId: id,
+        number: number,
+        productId: checkedProduct.id,
+      }).then((res) => {
+        showSuccessToast("添加成功");
+        if (productLength != 1 || openAttr == true) {
+          setOpenAttr(!openAttr);
+          setCartGoodsCount(res.cartTotal.goodsCount);
+        } else {
+          setCartGoodsCount(res.cartTotal.goodsCount);
+        }
+        Taro.hideLoading();
+      });
+    }
+  };
+  /** 判断规格是否选择完整 */
+  const isCheckedAllSpec = () => {
+    return !getCheckedSpecValue().some((v) => v.valueId == 0);
+  };
   const fastToCart = () => {};
   const shareTo = () => {
     const userInfo = Taro.getStorageSync("userInfo");
@@ -121,7 +175,78 @@ const Goods = () => {
       urls: galleryImages, // 需要预览的图片http链接列表
     });
   };
-  const clickSkuValue = () => {};
+  const clickSkuValue = (event) => {
+    // goods_specification中的id 要和product中的goods_specification_ids要一样
+    let specNameId = event.currentTarget.dataset.nameId;
+    let specValueId = event.currentTarget.dataset.valueId;
+    //判断是否可以点击
+    let _specificationList = specificationList;
+    if (_specificationList.specification_id == specNameId) {
+      for (let j = 0; j < _specificationList.valueList.length; j++) {
+        if (_specificationList.valueList[j].id == specValueId) {
+          //如果已经选中，则反选
+          if (_specificationList.valueList[j].checked) {
+            _specificationList.valueList[j].checked = false;
+          } else {
+            _specificationList.valueList[j].checked = true;
+          }
+        } else {
+          _specificationList.valueList[j].checked = false;
+        }
+      }
+    }
+    setSpecificationList(_specificationList);
+    //重新计算spec改变后的信息
+    changeSpecInfo();
+    //重新计算哪些值不可以点击
+  };
+  const changeSpecInfo = () => {
+    const checkedNameValue = getCheckedSpecValue();
+    setNumber(1);
+    //设置选择的信息
+    const checkedValue = checkedNameValue
+      .filter((v) => v.valueId != 0)
+      .map((v) => v.valueText);
+    if (checkedValue.length > 0) {
+      setTmpSpecText("已选择：" + checkedValue.join("　"));
+      setPriceChecked(true);
+    } else {
+      setTmpSpecText("请选择规格和数量");
+      setPriceChecked(false);
+    }
+
+    if (isCheckedAllSpec()) {
+      setTmpSpecText(tmpSpecText);
+
+      // 点击规格的按钮后
+      // 验证库存
+      let checkedProductArray = getCheckedProductItem(getCheckedSpecKey());
+      if (!checkedProductArray || checkedProductArray.length <= 0) {
+        // console.error('规格所对应货品不存在');
+        showErrorToast("规格所对应货品不存在");
+
+        return;
+      }
+      let checkedProduct = checkedProductArray[0];
+      if (checkedProduct.goods_number < number) {
+        //找不到对应的product信息，提示没有库存
+        setCheckedSpecPrice(checkedProduct.retail_price);
+        setGoodsNumber(checkedProduct.goods_number);
+        showErrorToast("库存不足");
+
+        return false;
+      }
+      if (checkedProduct.goods_number > 0) {
+        setCheckedSpecPrice(goods.retail_price);
+        setGoodsNumber(checkedProduct.goods_number);
+      } else {
+        setCheckedSpecPrice(goods.retail_price);
+      }
+    } else {
+      setCheckedSpecText("请选择规格和数量");
+      setCheckedSpecPrice(goods.retail_price);
+    }
+  };
   const bindchange = (e) => {
     const current = e.detail.current;
     setCurrent(current);

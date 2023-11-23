@@ -30,7 +30,7 @@ export const CatalogCurrent = async (data) => await request({ url: "catalog/curr
 export const GetCurrentList = async (data) => await request({ url: "catalog/currentlist", data });
 
 // 购物车
-export const CartAdd = async (data) => await request({ url: "cart/add", data });// 添加商品到购物车
+export const CartAdd = async (data) => await request({ url: "cart/add", method: "post", data });// 添加商品到购物车
 export const CartList = async () => await request({ url: "cart/index" });//获取购物车的数据
 export const CartUpdate = async (data) => await request({ url: "cart/update", method: "post", data });// 更新购物车的商品
 export const CartDelete = async (data) => await request({ url: "cart/delete", method: "post", data });// 删除购物车的商品

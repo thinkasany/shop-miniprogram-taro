@@ -35,7 +35,7 @@ const loginNow = () => {
 function showErrorToast(msg) {
   Taro.showToast({
     title: msg,
-    icon: "none",
+    image: "/images/icon/icon_error.png",
   });
 }
 
@@ -52,7 +52,7 @@ function testMobile(num) {
   if (num.length == 0) {
     Taro.showToast({
       title: "手机号为空",
-      image: "/images/icon/icon_error.png", 
+      image: "/images/icon/icon_error.png",
     });
     return false;
   } else if (num.length < 11) {
