@@ -9,6 +9,7 @@ export default defineAppConfig({
     "pages/goods/index",
     "pages/comment/index",
     "pages/search/index",
+    "pages/payResult/index",
   ],
   subpackages: [
     {

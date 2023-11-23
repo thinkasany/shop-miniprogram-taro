@@ -1,10 +1,16 @@
 import locationIcon from "@/images/icon/location.png";
 import Taro from "@tarojs/taro";
 import { useState } from "react";
+import { CartCheckout, OrderSubmit } from "@/servers";
+import { Input } from "@tarojs/components";
+import { showErrorToast } from "@/utils";
 import "./index.less";
 
 const Index = () => {
   const [payMethod, setPayMethod] = useState(1);
+  const [addressId, setAddressId] = useState(0);
+  // const [addType, setAddType] = useState<null | string>(null);
+  // const [orderFrom, setOrderFrom] = useState<any>(null);
   const [freightPrice, setFreightPrice] = useState(0);
   const [goodsCount, setGoodsCount] = useState(0);
   const [goodsTotalPrice, setGoodsTotalPrice] = useState(0.0); //订单总价
@@ -13,24 +19,85 @@ const Index = () => {
   const [checkedAddress, setCheckedAddress] = useState<any>({});
   const [orderInfo, setOrderInfo] = useState<any>({});
   const [checkedGoodsList, setCheckedGoodsList] = useState<any[]>([]);
+  const [postscript, setPostscript] = useState("");
 
   Taro.useDidShow(async () => {
     const $instance = Taro.getCurrentInstance();
-    if ($instance?.router?.params!.addtype) {
-      console.log(
-        "$instance?.router?.params!.addtype",
-        $instance?.router?.params!.addtype
-      );
-    }
+    const { orderFrom = {}, addtype: addType } = $instance?.router
+      ?.params as any;
+    const addressId = Taro.getStorageSync("addressId");
+    getCheckoutInfo({ orderFrom, addType, addressId });
   });
+
+  const getCheckoutInfo = async ({ orderFrom, addType, addressId }) => {
+    const data = await CartCheckout({
+      addressId,
+      addType,
+      orderFrom,
+      type: 0,
+    });
+    const {
+      checkedGoodsList,
+      checkedAddress,
+      actualPrice,
+      addressId: currentAddressId,
+      freightPrice,
+      goodsTotalPrice,
+      orderTotalPrice,
+      goodsCount,
+      outStock,
+      numberChange,
+    } = data;
+    setCheckedGoodsList(checkedGoodsList);
+    setCheckedAddress(checkedAddress);
+    setActualPrice(actualPrice);
+    setAddressId(currentAddressId);
+    setFreightPrice(freightPrice);
+    setGoodsTotalPrice(goodsTotalPrice);
+    setOrderTotalPrice(orderTotalPrice);
+    setGoodsCount(goodsCount);
+    setOrderInfo(outStock);
+    Taro.setStorageSync("addressId", addressId);
+    if (outStock == 1) {
+      showErrorToast("有部分商品缺货或已下架");
+    } else if (numberChange == 1) {
+      showErrorToast("部分商品库存有变动");
+    }
+  };
   const toSelectAddress = () => {
     Taro.navigateTo({
       url: "/pages/center/address?type=1",
     });
   };
   const offlineOrder = () => {};
-  const submitOrder = () => {};
-  const bindinputMemo = () => {};
+  // TODO 有个bug，用户没选择地址，支付无法继续进行，在切换过token的情况下
+  const submitOrder = () => {
+    if (addressId <= 0) {
+      showErrorToast("请选择收货地址");
+      return false;
+    }
+    Taro.showLoading({
+      title: "",
+      mask: true,
+    });
+    let orderId = "1111";
+    Taro.hideLoading();
+    Taro.redirectTo({
+      url: "/pages/payResult/index?status=1&orderId=" + orderId,
+    });
+    // fixme todo 支付迟点再做 先写页面
+    // OrderSubmit({ addressId, postscript, freightPrice, offlinePay: 0 }).then(
+    //   (res) => {
+    //     Taro.removeStorageSync("orderId");
+    //     Taro.setStorageSync("addressId", 0);
+    //     const orderId = res.orderInfo.id;
+    //     Taro.hideLoading();
+    //   }
+    // );
+  };
+  const bindinputMemo = (event) => {
+    setPostscript(event.detail.value);
+  };
   return (
     <div className="container">
       <div className="wrap">
@@ -103,11 +170,11 @@ const Index = () => {
           <div className="memo-box">
             <div className="row-label">备注：</div>
             <div className="right-text memo-input">
-              <input
+              <Input
                 type="text"
                 className="memo"
-                onChange={bindinputMemo}
-                value={orderInfo.postscript}
+                onInput={bindinputMemo}
+                value={postscript}
                 placeholder="亲爱的买家，这里输入备注"
                 cursor-spacing="100"
               />

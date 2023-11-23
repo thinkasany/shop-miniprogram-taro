@@ -39,7 +39,7 @@ export const CartUpdate = async (data) => await request({ url: "cart/update", me
 export const CartDelete = async (data) => await request({ url: "cart/delete", method: "post", data });// 删除购物车的商品
 export const CartChecked = async (data) => await request({ url: "cart/checked", method: "post", data });// 选择或取消选择商品
 export const CartGoodsCount = async () => await request({ url: "cart/goodsCount" });// 获取购物车商品件数
-export const checkout = async (data) => await request({ url: "cart/checkout", data });// 下单前信息确认
+export const CartCheckout = async (data) => await request({ url: "cart/checkout", data });// 下单前信息确认
 
 // 商品
 export const GoodsCount = async () => await request({ url: "goods/count" });// 统计商品总数
@@ -51,7 +51,7 @@ export const SaveUserId = async (data) => await request({ url: "goods/saveUserId
 
 
 // 订单
-export const OrderSubmit = async (data) => await request({ url: "order/submit", data });// 提交订单
+export const OrderSubmit = async (data) => await request({ url: "order/submit", data, method: 'post' });// 提交订单
 export const OrderList = async (data) => await request({ url: "order/list", data });// 订单列表
 export const OrderDetail = async (data) => await request({ url: "order/detail", data });// 订单详情
 export const OrderDelete = async (data) => await request({ url: "order/delete", data });// 订单删除

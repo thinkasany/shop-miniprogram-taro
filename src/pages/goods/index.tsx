@@ -504,7 +504,9 @@ const Goods = () => {
                     {specificationList?.valueList?.map((item, index) => {
                       return (
                         <div
-                          className="value {{item.checked ? 'selected' : ''}} {{item.goods_number <=0?'out-stock':''}}"
+                          className={`value ${item.checked ? "selected" : ""} ${
+                            item.goods_number <= 0 ? "out-stock" : ""
+                          }`}
                           onClick={clickSkuValue}
                           data-value-id={item.id}
                           data-index={index}
