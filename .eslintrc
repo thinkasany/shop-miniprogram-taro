@@ -1,7 +1,10 @@
 {
   "extends": ["taro/react"],
   "rules": {
+    "max-len": ["error", { "code": 120 }],
     "react/jsx-uses-react": "off",
-    "react/react-in-jsx-scope": "off"
+    "jsx-quotes": ["error", "prefer-double"],
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-shadow": "off"
   }
 }
