@@ -12,6 +12,9 @@ export const AuthLoginByWeixin = async (data) =>
 export const IndexUrl = async () => await request({ url: "index/appInfo" });
 
 export const ShowSettings = async () => await request({ url: "settings/showSettings" });
+export const SaveSettings = async () => await request({ url: "settings/save" });
+export const SettingsDetail = async () => await request({ url: "settings/userDetail" });
+
 
 // 收货地址
 export const getAddressDetail = async (data) => await request({ url: "address/addressDetail", data });//收货地址详情
@@ -59,5 +62,9 @@ export const OrderCountInfo = async () => await request({ url: "order/orderCount
 export const OrderExpressInfo = async (data) => await request({ url: "order/express", data });// 物流信息
 export const OrderGoods = async (data) => await request({ url: "order/orderGoods", data });// 获取checkout页面的商品列表
 
-
+// 搜索
+export const SearchIndex = async () => await request({ url: "search/index" });// 搜索页面数据
+export const SearchHelper = async (data) => await request({ url: "search/helper", data });// 搜索帮助
+export const SearchClearHistory = async () => await request({ url: "search/clearHistory", method: 'post' });
+export const GetBase64 = async (data) => await request({ url: "search/getBase64", data });// 获取商品详情二维码
 

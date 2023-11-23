@@ -8,10 +8,18 @@ import trash9Icon from "@/images/icon/trash-9.png";
 import noSearchICon from "@/images/icon/no-search.png";
 import { Navigator, Input } from "@tarojs/components";
 import { useState } from "react";
+import Taro from "@tarojs/taro";
+import {
+  SearchIndex,
+  SearchHelper,
+  GoodsList,
+  SearchClearHistory,
+} from "@/servers";
 import "./index.less";
 
 const Index = () => {
   const [keyword, setKeyword] = useState("");
+  const [salesSortOrder, setSalesSortOrder] = useState("asc");
   const [currentSortOrder, setCurrentSortOrder] = useState("asc");
   const [currentSortType, setCurrentSortType] = useState("default");
   const [defaultKeyword, setDefaultKeyword] = useState<any>({});
@@ -20,20 +28,97 @@ const Index = () => {
   const [hotKeyword, setHotKeyword] = useState<any[]>([]);
   const [helpKeyword, setHelpKeyword] = useState<any[]>([]);
   const [searchStatus, setSearchStatus] = useState(false);
-  const closeSearch = () => {};
-  const openSortFilter = () => {};
-  const onKeywordTap = () => {};
+  Taro.useDidShow(() => {
+    getSearchKeyword();
+  });
+  const inputFocus = () => {
+    setGoodsList([]);
+    setSearchStatus(false);
+    if (keyword) {
+      getHelpKeyword();
+    }
+  };
+  const getSearchKeyword = () => {
+    SearchIndex().then((res) => {
+      const { historyKeywordList, defaultKeyword, hotKeywordList } = res;
+      setHistoryKeyword(historyKeywordList);
+      setDefaultKeyword(defaultKeyword);
+      setHotKeyword(hotKeywordList);
+    });
+  };
+  const getHelpKeyword = () => {
+    SearchHelper({ keyword }).then((res) => {
+      setHelpKeyword(res);
+    });
+  };
+  const closeSearch = () => {
+    Taro.navigateBack();
+  };
+  const openSortFilter = (event) => {
+    let currentId = event.currentTarget.id;
+    switch (currentId) {
+      case "salesSort":
+        let _SortOrder = "asc";
+        if (salesSortOrder === "asc") {
+          _SortOrder = "desc";
+        }
+        setCurrentSortOrder("asc");
+        setCurrentSortType("sales");
+        setSalesSortOrder(_SortOrder);
+        getGoodsList();
+        break;
+      case "priceSort":
+        let tmpSortOrder = "asc";
+        if (currentSortOrder === "asc") {
+          tmpSortOrder = "desc";
+        }
+        setCurrentSortOrder("asc");
+        setCurrentSortType("price");
+        setSalesSortOrder(tmpSortOrder);
+        getGoodsList();
+        break;
+      default:
+        //综合排序
+        setCurrentSortOrder("desc");
+        setCurrentSortType("default");
+        setSalesSortOrder("desc");
+        getGoodsList();
+    }
+  };
+  const onKeywordTap = (event) => {
+    getSearchResult(event.target.dataset.keyword);
+  };
   const inputChange = (e) => {
     setKeyword(e.detail.value);
   };
-  const inputFocus = () => {
-    // 处理输入框聚焦事件
+
+  // 处理确认搜索事件
+  const onKeywordConfirm = (event) => {
+    getSearchResult(event.detail.value);
+  };
+  const getSearchResult = (keyword) => {
+    setKeyword(keyword);
+    setGoodsList([]);
+    getGoodsList();
+  };
+  const getGoodsList = () => {
+    GoodsList({
+      keyword: keyword,
+      sort: currentSortType,
+      order: currentSortOrder,
+      sales: salesSortOrder,
+    }).then((res) => {
+      setSearchStatus(true);
+      setGoodsList(res);
+      //重新获取关键词
+      getSearchKeyword();
+    });
   };
 
-  const onKeywordConfirm = () => {
-    // 处理确认搜索事件
+  const clearHistory = () => {
+    setHistoryKeyword([]);
+    SearchClearHistory();
   };
-  const clearHistory = () => {};
   const clearKeyword = () => {};
   return (
     <div className="container" style={{ height: "100%" }}>
@@ -43,13 +128,11 @@ const Index = () => {
           <Input
             name="input"
             className="keywrod"
-            focus
             value={keyword}
-            confirm-type="search"
+            confirmType="search"
             onInput={inputChange}
             onFocus={inputFocus}
             onConfirm={onKeywordConfirm}
-            confirmType="search"
             placeholder={defaultKeyword.keyword}
           />
           {keyword && (
@@ -139,7 +222,7 @@ const Index = () => {
                 <div className="txt">综合</div>
               </div>
               <div
-                className="item {{currentSortType == 'price' ? 'active' : ''}}"
+                className={`item ${currentSortType == "price" ? "active" : ""}`}
                 onClick={openSortFilter}
                 id="priceSort"
               >
@@ -156,7 +239,7 @@ const Index = () => {
                 )}
               </div>
               <div
-                className="item {{currentSortType == 'sales' ? 'active' : ''}}"
+                className={`item ${currentSortType == "sales" ? "active" : ""}`}
                 onClick={openSortFilter}
                 id="salesSort"
               >
@@ -167,7 +250,7 @@ const Index = () => {
                   <div>
                     <img
                       className="icon"
-                      src={currentSortOrder === "asc" ? ascIcon : descIcon}
+                      src={salesSortOrder === "asc" ? ascIcon : descIcon}
                     />
                   </div>
                 )}
@@ -188,7 +271,7 @@ const Index = () => {
                       <Navigator
                         hover-class="none"
                         className="navi-url"
-                        url="/pages/goods/goods?id={{iitem.id}}"
+                        url={`/pages/goods/index?id=${iitem.id}`}
                       >
                         <div className="box">
                           <img src={iitem.list_pic_url} className="image">
