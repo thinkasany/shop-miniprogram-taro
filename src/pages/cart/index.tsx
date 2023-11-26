@@ -338,7 +338,7 @@ const Index = () => {
           })}
         </div>
       ) : (
-        <div className={`cart-empty-container ${hasCartGoods ? "show" : ""}`}>
+        <div className={`cart-empty-container ${!hasCartGoods ? "show" : ""}`}>
           <div className="cart-empty-div">
             <img className="cart-empty" src={cartEmptyPng} />
           </div>
