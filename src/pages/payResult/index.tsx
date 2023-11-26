@@ -3,6 +3,7 @@ import contactIcon from "@/images/icon/contact.png";
 import paySuccessIcon from "@/images/icon/pay-success.png";
 import { useState } from "react";
 import Taro from "@tarojs/taro";
+import { showErrorToast, payOrder } from "@/utils";
 import "./index.less";
 
 const Index = () => {
@@ -15,13 +16,25 @@ const Index = () => {
     setStatus(Number(status));
     setOrderId(orderId);
   });
-  const toIndex = () => {};
+  const toIndex = () => {
+    Taro.switchTab({
+      url: "/pages/index/index",
+    });
+  };
   const toOrderListPage = () => {
     Taro.switchTab({
       url: "/pages/ucenter/index",
     });
   };
-  const payOrder = () => {};
+  const toPayOrder = () => {
+    payOrder(orderId)
+      .then(() => {
+        setStatus(1);
+      })
+      .catch((res) => {
+        showErrorToast(res.errmsg);
+      });
+  };
   return (
     <div className="container">
       {status === 1 ? (
@@ -57,7 +70,7 @@ const Index = () => {
               <div className="contact">联系客服</div>
             </button>
           </div>
-          <div className="to-order-btn" onClick={payOrder}>
+          <div className="to-order-btn" onClick={toPayOrder}>
             重新付款
           </div>
           <div className="btn-go-order" onClick={toOrderListPage}>

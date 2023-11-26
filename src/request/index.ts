@@ -15,15 +15,15 @@ const defaultOptions = {
 
 const baseURL = "http://127.0.0.1:8360/api/";
 export const mergeHeaders = (options) => {
-  const token = Taro.getStorageSync('x-xzzshop-token') || '';
+  const token = Taro.getStorageSync("x-xzzshop-token") || "";
   const defaultHeaders = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
   if (token) {
     options.header = {
       ...defaultHeaders,
       ...(options.header || {}),
-      ['x-xzzshop-token']: token,
+      ["x-xzzshop-token"]: token,
     };
   } else {
     options.header = {
@@ -55,8 +55,9 @@ const request = (options): Promise<any> => {
         const { data, statusCode, header } = res;
 
         if (data.data) {
-          resolve(data.data)
+          resolve(data.data);
         }
+        resolve(data);
         // console.log(`http`, res);
 
         // }

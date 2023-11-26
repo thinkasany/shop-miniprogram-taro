@@ -68,3 +68,5 @@ export const SearchHelper = async (data) => await request({ url: "search/helper"
 export const SearchClearHistory = async () => await request({ url: "search/clearHistory", method: 'post' });
 export const GetBase64 = async (data) => await request({ url: "search/getBase64", data });// 获取商品详情二维码
 
+export const PayPrepayId = async(data) => await request({ url: "pay/preWeixinPay", data });
+

@@ -3,7 +3,7 @@ import Taro from "@tarojs/taro";
 import { useState } from "react";
 import { CartCheckout, OrderSubmit } from "@/servers";
 import { Input } from "@tarojs/components";
-import { showErrorToast } from "@/utils";
+import { showErrorToast, payOrder } from "@/utils";
 import "./index.less";
 
 const Index = () => {
@@ -26,6 +26,7 @@ const Index = () => {
     const { orderFrom = {}, addtype: addType } = $instance?.router
       ?.params as any;
     const addressId = Taro.getStorageSync("addressId");
+    setAddressId(addressId);
     getCheckoutInfo({ orderFrom, addType, addressId });
   });
 
@@ -40,7 +41,6 @@ const Index = () => {
       checkedGoodsList,
       checkedAddress,
       actualPrice,
-      addressId: currentAddressId,
       freightPrice,
       goodsTotalPrice,
       orderTotalPrice,
@@ -51,7 +51,9 @@ const Index = () => {
     setCheckedGoodsList(checkedGoodsList);
     setCheckedAddress(checkedAddress);
     setActualPrice(actualPrice);
-    setAddressId(currentAddressId);
+    if (checkedAddress) {
+      setAddressId(checkedAddress.id);
+    }
     setFreightPrice(freightPrice);
     setGoodsTotalPrice(goodsTotalPrice);
     setOrderTotalPrice(orderTotalPrice);
@@ -80,20 +82,37 @@ const Index = () => {
       title: "",
       mask: true,
     });
-    let orderId = "1111";
-    Taro.hideLoading();
-    Taro.redirectTo({
-      url: "/pages/payResult/index?status=1&orderId=" + orderId,
-    });
+    // let orderId = "1111";
+    // Taro.hideLoading();
+    // Taro.redirectTo({
+    //   url: "/pages/payResult/index?status=1&orderId=" + orderId,
+    // });
+    console.log(addressId, postscript, freightPrice, actualPrice);
+
     // fixme todo 支付迟点再做 先写页面
-    // OrderSubmit({ addressId, postscript, freightPrice, offlinePay: 0 }).then(
-    //   (res) => {
-    //     Taro.removeStorageSync("orderId");
-    //     Taro.setStorageSync("addressId", 0);
-    //     const orderId = res.orderInfo.id;
-    //     Taro.hideLoading();
-    //   }
-    // );
+    OrderSubmit({
+      addressId,
+      postscript,
+      freightPrice,
+      actualPrice,
+      offlinePay: 0,
+    }).then((res) => {
+      Taro.removeStorageSync("orderId");
+      Taro.setStorageSync("addressId", 0);
+      const orderId = res.orderInfo.id;
+      payOrder(orderId)
+        .then(() => {
+          Taro.redirectTo({
+            url: "/pages/payResult/index?status=1&orderId=" + orderId,
+          });
+        })
+        .catch(() => {
+          Taro.redirectTo({
+            url: "/pages/payResult/index?status=0&orderId=" + orderId,
+          });
+        });
+      Taro.hideLoading();
+    });
   };
   const bindinputMemo = (event) => {
     setPostscript(event.detail.value);
