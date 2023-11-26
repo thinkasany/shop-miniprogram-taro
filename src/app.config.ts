@@ -21,6 +21,7 @@ export default defineAppConfig({
         "footprint",
         "orderList",
         "orderDetail",
+        "setting",
       ],
     },
   ], // 分包

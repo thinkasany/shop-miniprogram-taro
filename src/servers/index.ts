@@ -12,7 +12,7 @@ export const AuthLoginByWeixin = async (data) =>
 export const IndexUrl = async () => await request({ url: "index/appInfo" });
 
 export const ShowSettings = async () => await request({ url: "settings/showSettings" });
-export const SaveSettings = async () => await request({ url: "settings/save" });
+export const SaveSettings = async (data) => await request({ url: "settings/save", method: "post", data });
 export const SettingsDetail = async () => await request({ url: "settings/userDetail" });
 
 
