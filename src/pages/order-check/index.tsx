@@ -99,7 +99,7 @@ const Index = () => {
     }).then((res) => {
       Taro.removeStorageSync("orderId");
       Taro.setStorageSync("addressId", 0);
-      const orderId = res.orderInfo.id;
+      const orderId = res.id;
       payOrder(orderId)
         .then(() => {
           Taro.redirectTo({

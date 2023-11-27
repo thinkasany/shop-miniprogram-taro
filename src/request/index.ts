@@ -13,7 +13,8 @@ const defaultOptions = {
   loading: false,
 };
 
-const baseURL = "http://127.0.0.1:8360/api/";
+// const baseURL = "http://127.0.0.1:8360/api/"; // thinkjs
+const baseURL = "http://127.0.0.1:3000/api/"; // nest
 export const mergeHeaders = (options) => {
   const token = Taro.getStorageSync("x-xzzshop-token") || "";
   const defaultHeaders = {

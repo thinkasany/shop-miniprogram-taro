@@ -1,7 +1,7 @@
 import { PayPrepayId } from "@/servers";
 import Taro from "@tarojs/taro";
 
-export default function payOrder(orderId) {
+const payOrder = (orderId) => {
   return new Promise((resolve, reject) => {
     PayPrepayId({ orderId })
       .then((res) => {
@@ -10,7 +10,7 @@ export default function payOrder(orderId) {
           const payParam = res.data;
           // 如果没有支付想直接支付成功，下面注释。
           // -----------------------------------
-          // console.log("payParam", payParam);
+          console.log("payParam", payParam);
           // Taro.requestPayment({
           //   timeStamp: payParam.timeStamp,
           //   nonceStr: payParam.nonceStr,
@@ -32,7 +32,7 @@ export default function payOrder(orderId) {
 
           // =================================
           // 直接支付成功，下面打开，上面注释
-          resolve(res);
+          // resolve(res);
           // =================================
         } else {
           reject(res);
@@ -43,4 +43,6 @@ export default function payOrder(orderId) {
         reject(err);
       });
   });
-}
+};
+
+export default payOrder;
