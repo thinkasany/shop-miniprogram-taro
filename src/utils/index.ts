@@ -1,4 +1,5 @@
 import Taro from "@tarojs/taro";
+import payOrder from "./payOrder";
 /**
  * 调用微信登录
  */
@@ -72,4 +73,11 @@ function testMobile(num) {
   }
 }
 
-export { login, loginNow, showErrorToast, showSuccessToast, testMobile };
+export {
+  login,
+  loginNow,
+  showErrorToast,
+  showSuccessToast,
+  testMobile,
+  payOrder,
+};

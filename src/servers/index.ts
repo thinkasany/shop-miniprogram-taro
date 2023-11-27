@@ -12,7 +12,7 @@ export const AuthLoginByWeixin = async (data) =>
 export const IndexUrl = async () => await request({ url: "index/appInfo" });
 
 export const ShowSettings = async () => await request({ url: "settings/showSettings" });
-export const SaveSettings = async () => await request({ url: "settings/save" });
+export const SaveSettings = async (data) => await request({ url: "settings/save", method: "post", data });
 export const SettingsDetail = async () => await request({ url: "settings/userDetail" });
 
 
@@ -67,4 +67,6 @@ export const SearchIndex = async () => await request({ url: "search/index" });//
 export const SearchHelper = async (data) => await request({ url: "search/helper", data });// 搜索帮助
 export const SearchClearHistory = async () => await request({ url: "search/clearHistory", method: 'post' });
 export const GetBase64 = async (data) => await request({ url: "search/getBase64", data });// 获取商品详情二维码
+
+export const PayPrepayId = async(data) => await request({ url: "pay/preWeixinPay", data });
 

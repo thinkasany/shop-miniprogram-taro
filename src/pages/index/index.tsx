@@ -23,24 +23,19 @@ const Index = () => {
   const [showNotice, setShowNotice] = useState(1);
   const [autoplay, setAutoplay] = useState(true);
 
-  useEffect(() => {
-    // 在这里执行相当于小程序的onLoad逻辑
+  Taro.useDidShow(() => {
+    const userInfo = Taro.getStorageSync("userInfo");
+    if (userInfo !== "") {
+      setUserInfo(userInfo);
+    }
     getIndexData();
     getChannelShowInfo();
-
-    // React的类似componentDidMount的逻辑
-    return () => {
-      setAutoplay(false);
-    };
-  }, []); // 传递一个空数组，表示只在组件挂载时执行
-
-  useEffect(() => {
-    // React的类似componentDidUpdate的逻辑
-    // const info = localStorage.getItem("userInfo");
-    // if (info) {
-    //   setUserInfo(JSON.parse(info));
-    // }
-  }, [userInfo]);
+    const info = Taro.getSystemInfoSync();
+    const sysHeight = info.windowHeight - 100;
+    setAutoplay(true);
+    setSysHeight(sysHeight);
+    Taro.removeStorageSync("categoryId");
+  });
 
   useEffect(() => {
     // 监听页面滚动事件
@@ -76,10 +71,15 @@ const Index = () => {
     // 更新购物车图标
     let cartGoodsCount = "";
     if (data.cartCount === 0) {
-      localStorage.removeItem("cartCount");
+      Taro.removeTabBarBadge({
+        index: 2,
+      });
     } else {
       cartGoodsCount = data.cartCount + "";
-      localStorage.setItem("cartCount", cartGoodsCount);
+      Taro.setTabBarBadge({
+        index: 2,
+        text: cartGoodsCount,
+      });
     }
   };
 

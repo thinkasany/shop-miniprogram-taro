@@ -30,6 +30,7 @@ const OrderDedeail = () => {
   const getOrderDetail = (orderId) => {
     OrderDetail({ orderId }).then((res) => {
       const { orderInfo, orderGoods, handleOption, textCode, goodsCount } = res;
+      console.log('res', res);
       setOrderInfo(orderInfo);
       setOrderGoods(orderGoods);
       setHandleOption(handleOption);
@@ -116,10 +117,10 @@ const OrderDedeail = () => {
           <div className="count-wrap">
             <div className="time-text"></div>
             <div className="count-down-time">
-              <div className="hour">{wxTimerList.orderTimer.wxHour}小时</div>
-              <div className="minute">{wxTimerList.orderTimer.wxMinute}分</div>
+              <div className="hour">{wxTimerList.orderTimer?.wxHour}小时</div>
+              <div className="minute">{wxTimerList.orderTimer?.wxMinute}分</div>
               <div className="seconds">
-                {wxTimerList.orderTimer.wxSeconds}秒
+                {wxTimerList.orderTimer?.wxSeconds}秒
               </div>
             </div>
             <div className="time-text">后自动关闭</div>

@@ -9,6 +9,7 @@ import iconserviceR from "@/images/icon/icon-service-r.png";
 import iconAboutR from "@/images/icon/icon-about-r.png";
 import Taro from "@tarojs/taro";
 import { loginNow } from "@/utils";
+import { OrderCountInfo } from "@/servers";
 
 import "./index.less";
 
@@ -16,12 +17,29 @@ const Index = () => {
   const [hasUserInfo, setHasUserInfo] = useState(true);
   const [userInfo, setUserInfo] = useState<any>({});
   const [info, setInfo] = useState<any>({});
+  const [status, setStatus] = useState<any>({});
   Taro.useDidShow(() => {
     const globalData = Taro.getStorageSync("globalData");
     setInfo(globalData.info);
-    console.log("globalData", globalData);
+    const userInfo = Taro.getStorageSync("userInfo");
+    if (userInfo === "") {
+      setHasUserInfo(false);
+    } else {
+      setHasUserInfo(true);
+    }
+    setUserInfo(userInfo);
+    // console.log("globalData", globalData);
+    // console.log("userInfo", userInfo);
+    getOrderInfo();
+    Taro.removeStorageSync("categoryId");
   });
-  const goProfile = () => console.log("11");
+  const goProfile = () => {
+    if (loginNow()) {
+      Taro.navigateTo({
+        url: "/pages/center/setting",
+      });
+    }
+  };
   const toOrderListTap = (event) => {
     if (loginNow()) {
       const showType = event.currentTarget.dataset.index;
@@ -51,7 +69,11 @@ const Index = () => {
       url: "/pages/center/about",
     });
   };
-  const getOrderInfo = () => console.log("11");
+  const getOrderInfo = () => {
+    OrderCountInfo().then((res) => {
+      setStatus(res);
+    });
+  };
   const goAuth = () => {
     Taro.navigateTo({
       url: "/pages/app-auth/index",
@@ -61,7 +83,7 @@ const Index = () => {
   return (
     <div className="container">
       <div className="userinfo">
-        {hasUserInfo ? (
+        {!hasUserInfo ? (
           <div className="head-wrap" onClick={goAuth}>
             <div className="no-login-avatar">
               <div className="no-avatar">
@@ -105,21 +127,27 @@ const Index = () => {
         <div className="icon-wrap" data-index="1" onClick={toOrderListTap}>
           <div className="order-icon-wrap">
             <img className="order-icon" src={iconPayR}></img>
-            {/* <div wx:if="{{status.toPay > 0 }}" className='red-point'>{{status.toPay}}</div> */}
+            {status.toPay > 0 && (
+              <div className="red-point">{status.toPay}</div>
+            )}
           </div>
           <text className="order-txt">待付款</text>
         </div>
         <div className="icon-wrap" data-index="2" onClick={toOrderListTap}>
           <div className="order-icon-wrap">
             <img className="order-icon" src={iconDeliveryR}></img>
-            {/* <div wx:if="{{status.toDelivery > 0 }}" className='red-point'>{{status.toDelivery}}</div> */}
+            {status.toDelivery > 0 && (
+              <div className="red-point">{status.toDelivery}</div>
+            )}
           </div>
           <text className="order-txt">待发货</text>
         </div>
         <div className="icon-wrap" data-index="3" onClick={toOrderListTap}>
           <div className="order-icon-wrap">
             <img className="order-icon" src={iconOnroadR}></img>
-            {/* <div wx:if="{{status.toReceive > 0 }}" className='red-point'>{{status.toReceive}}</div> */}
+            {status.toReceive > 0 && (
+              <div className="red-point">{status.toReceive}</div>
+            )}
           </div>
           <text className="order-txt">待收货</text>
         </div>
